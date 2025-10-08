@@ -767,7 +767,7 @@ export default function StockSyncApp() {
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center">
-                <DollarSign className="h-8 w-8 text-blue-600" />
+                <div className="h-8 w-8 text-blue-600 flex items-center justify-center text-lg font-bold">₹</div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Available Cash</p>
                   <p className="text-2xl font-bold">₹{funds.availablecash?.toLocaleString()}</p>
