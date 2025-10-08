@@ -377,7 +377,6 @@ export async function GET(request, { params }) {
 
     // Protected routes
     const user = await authenticateUser(request);
-    console.log('GET authenticated user:', user ? user.email : 'null');
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
