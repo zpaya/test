@@ -418,6 +418,18 @@ export async function GET(request, { params }) {
       return NextResponse.json({ orders });
     }
 
+    if (path === 'admin/subscribers') {
+      if (!isAdmin(user)) {
+        return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+      }
+
+      const subscribers = await database.collection('users').find({ 
+        role: 'user' 
+      }).project({ password: 0, token: 0 }).toArray();
+
+      return NextResponse.json({ subscribers });
+    }
+
     return NextResponse.json({ error: 'Endpoint not found' }, { status: 404 });
 
   } catch (error) {
