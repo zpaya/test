@@ -365,8 +365,6 @@ export async function GET(request, { params }) {
     const path = params.path ? params.path.join('/') : '';
     const url = new URL(request.url);
     
-    console.log('GET request path:', path, 'params:', params);
-
     // Public endpoints
     if (path === 'stocks/search') {
       const query = url.searchParams.get('q') || '';
