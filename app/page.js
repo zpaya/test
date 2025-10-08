@@ -537,17 +537,22 @@ export default function StockSyncApp() {
                       )}
                     </div>
                     
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                       <Label>Product Type</Label>
-                      <Select value={orderData.productType} onValueChange={(value) => setOrderData({...orderData, productType: value})}>
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="CNC">Delivery</SelectItem>
-                          <SelectItem value="MIS">Intraday</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <RadioGroup 
+                        value={orderData.productType} 
+                        onValueChange={(value) => setOrderData({...orderData, productType: value})}
+                        className="flex space-x-4"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="CNC" id="delivery" />
+                          <Label htmlFor="delivery" className="cursor-pointer">Delivery</Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <RadioGroupItem value="MIS" id="intraday" />
+                          <Label htmlFor="intraday" className="cursor-pointer">Intraday</Label>
+                        </div>
+                      </RadioGroup>
                     </div>
                     
                     <Button 
