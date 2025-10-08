@@ -443,15 +443,19 @@ export default function StockSyncApp() {
                         {searchResults.map((stock) => (
                           <div
                             key={stock.securityId}
-                            className={`p-3 border-b cursor-pointer hover:bg-gray-50 ${
-                              selectedStock?.symbol === stock.symbol ? 'bg-blue-50 border-blue-200' : ''
+                            className={`p-3 border-b cursor-pointer hover:bg-gray-50 transition-colors ${
+                              selectedStock?.symbol === stock.symbol ? 'bg-blue-50 border-blue-200 border-2' : ''
                             }`}
-                            onClick={() => setSelectedStock(stock)}
+                            onClick={() => {
+                              setSelectedStock(stock);
+                              setStockSearch(`${stock.symbol} - ${stock.name}`);
+                              setSearchResults([]);
+                            }}
                           >
                             <div className="flex justify-between items-center">
                               <div>
                                 <p className="font-medium">{stock.symbol}</p>
-                                <p className="text-sm text-gray-600">{stock.name}</p>
+                                <p className="text-sm text-gray-600 truncate">{stock.name}</p>
                               </div>
                               <div className="text-right">
                                 <p className="font-medium">₹{stock.price}</p>
