@@ -359,6 +359,8 @@ export async function GET(request, { params }) {
     const database = await connectDB();
     const path = params.path ? params.path.join('/') : '';
     const url = new URL(request.url);
+    
+    console.log('GET request path:', path, 'params:', params);
 
     // Public endpoints
     if (path === 'stocks/search') {
