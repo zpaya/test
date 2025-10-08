@@ -13,7 +13,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
-import { ArrowUpIcon, ArrowDownIcon, Users, TrendingUp, DollarSign, Activity, Search, Play, Settings } from 'lucide-react';
+import { ArrowUpIcon, ArrowDownIcon, Users, TrendingUp, Wallet, Activity, Search, Play, Settings } from 'lucide-react';
 
 export default function StockSyncApp() {
   const [user, setUser] = useState(null);
