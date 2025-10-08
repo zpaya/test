@@ -286,20 +286,15 @@ export async function POST(request, { params }) {
       });
     }
 
-    console.log('Checking path:', path, 'against admin/subscribers');
     if (path === 'admin/subscribers') {
-      console.log('Path matched admin/subscribers');
       if (!isAdmin(user)) {
-        console.log('User is not admin:', user.role);
         return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
       }
 
-      console.log('User is admin, fetching subscribers');
       const subscribers = await database.collection('users').find({ 
         role: 'user' 
       }).project({ password: 0, token: 0 }).toArray();
 
-      console.log('Found subscribers:', subscribers.length);
       return NextResponse.json({ subscribers });
     }
 
