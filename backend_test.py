@@ -30,7 +30,7 @@ class StockSyncTester:
         }
         
         self.new_user_data = {
-            "email": "testuser@example.com",
+            "email": f"testuser{int(time.time())}@example.com",  # Unique email
             "password": "testpass123",
             "name": "Test User"
         }
