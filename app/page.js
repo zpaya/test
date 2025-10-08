@@ -913,7 +913,19 @@ export default function StockSyncApp() {
                 <CardContent className="space-y-4">
                   <div className="space-y-2">
                     <Label>Broker</Label>
-                    <Input value={brokerData.brokerName} readOnly />
+                    <Select value={brokerData.brokerName} onValueChange={(value) => setBrokerData({...brokerData, brokerName: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select broker" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Dhan">Dhan</SelectItem>
+                        <SelectItem value="Zerodha">Zerodha</SelectItem>
+                        <SelectItem value="Upstox">Upstox</SelectItem>
+                        <SelectItem value="Fyers">Fyers</SelectItem>
+                        <SelectItem value="Groww">Groww</SelectItem>
+                        <SelectItem value="MStock">MStock</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                   
                   <div className="space-y-2">
