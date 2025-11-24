@@ -11,8 +11,10 @@ A comprehensive trading platform where **admin can execute orders for all subscr
 - **Real-time Results**: Live execution status with success/failure tracking
 
 ### 🏦 **Broker Integration**
-- **Dhan Mock API**: Realistic implementation matching Dhan's API structure
-- **Multi-Broker Ready**: Supports Zerodha, Upstox, Fyers, Groww, MStock
+- **Dhan Live API**: Real broker integration with Dhan API v2 for live order execution
+- **Hybrid Mode**: Automatic detection - real orders for connected users, mock for testing
+- **Mock Fallback**: Realistic mock API for testing and users without broker connection
+- **Multi-Broker Ready**: Architecture supports Zerodha, Upstox, Fyers, Groww, MStock
 - **International Expansion**: Easy to add brokers from any country
 
 ### 📊 **Admin Dashboard**
@@ -82,12 +84,35 @@ yarn dev
 | **Admin** | admin@stocksync.com | admin123 | Order execution, subscriber management |
 | **User** | john@example.com | user123 | Portfolio, settings, order history |
 
+## 🔥 Dhan Broker Integration
+
+### Live Trading with Dhan API v2
+The platform now supports **real broker integration** with Dhan's API for live order execution:
+
+- **Real Orders**: Place actual trades on NSE/BSE through Dhan
+- **Auto-Detection**: System automatically uses real API when user has connected Dhan
+- **Mock Fallback**: Users without broker connection use mock for testing
+- **Verified Connection**: Credentials validated during connection setup
+- **Complete API**: Holdings, funds, positions, order tracking all integrated
+
+### How to Connect Dhan
+
+1. Get your **Client ID** and **Access Token** from Dhan platform
+2. Go to **Settings → Broker Connection** in StockSync
+3. Enter credentials and click "Connect Broker"
+4. System validates and saves connection
+5. All orders now execute on live market!
+
+**Documentation**: See `DHAN_INTEGRATION.md` for complete setup guide
+
+⚠️ **Important**: Dhan requires **static IP whitelisting** for order placement. Contact Dhan support to whitelist your server IP.
+
 ## 🌍 International Expansion Ready
 
 ### 🏦 **Multi-Broker Support**
-- **India**: Dhan, Zerodha, Upstox, Fyers, Groww
-- **USA**: Robinhood, TD Ameritrade (planned)
-- **Europe**: Interactive Brokers, eToro (planned)
+- **India**: Dhan (Live), Zerodha, Upstox, Fyers, Groww (Coming Soon)
+- **USA**: Robinhood, TD Ameritrade (Planned)
+- **Europe**: Interactive Brokers, eToro (Planned)
 
 ### 💱 **Multi-Currency Support**
 - Easy currency symbol switching (₹, $, €, ¥)
@@ -99,14 +124,18 @@ yarn dev
 ```
 /app/
 ├── app/
-│   ├── api/[[...path]]/route.js    # Backend API endpoints
+│   ├── api/[[...path]]/route.js    # Backend API endpoints with Dhan integration
 │   ├── page.js                     # Frontend React component
 │   ├── layout.js                   # Next.js app layout
 │   └── globals.css                 # Global styles
 ├── components/ui/                  # Shadcn UI components
-├── lib/                           # Utility functions
-├── package.json                   # Dependencies
-└── README.md                      # This file
+├── lib/
+│   └── brokers/
+│       └── dhan.js                 # Dhan broker API integration
+├── DHAN_INTEGRATION.md             # Complete Dhan setup guide
+├── IMPLEMENTATION_SUMMARY.md       # Technical implementation details
+├── package.json                    # Dependencies
+└── README.md                       # This file
 ```
 
 ## 🔧 API Endpoints

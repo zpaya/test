@@ -48,7 +48,8 @@ export default function StockSyncApp() {
     brokerName: 'Dhan',
     apiKey: '',
     apiSecret: '',
-    clientId: ''
+    clientId: '',
+    accessToken: ''
   });
   const [maxCapital, setMaxCapital] = useState(100000);
 
@@ -929,32 +930,28 @@ export default function StockSyncApp() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label>API Key</Label>
-                    <Input
-                      type="password"
-                      value={brokerData.apiKey}
-                      onChange={(e) => setBrokerData({...brokerData, apiKey: e.target.value})}
-                      placeholder="Enter your Dhan API key"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>API Secret</Label>
-                    <Input
-                      type="password"
-                      value={brokerData.apiSecret}
-                      onChange={(e) => setBrokerData({...brokerData, apiSecret: e.target.value})}
-                      placeholder="Enter your API secret"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
                     <Label>Client ID</Label>
                     <Input
                       value={brokerData.clientId}
                       onChange={(e) => setBrokerData({...brokerData, clientId: e.target.value})}
-                      placeholder="Enter your client ID"
+                      placeholder="Enter your Dhan Client ID"
                     />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Access Token</Label>
+                    <Input
+                      type="password"
+                      value={brokerData.accessToken}
+                      onChange={(e) => setBrokerData({...brokerData, accessToken: e.target.value})}
+                      placeholder="Enter your Dhan Access Token (JWT)"
+                    />
+                  </div>
+
+                  <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                    <p className="text-xs text-amber-800">
+                      <strong>Dhan Setup:</strong> Get your Client ID and Access Token from Dhan Trading Platform. Access Token is a JWT that authenticates your API requests.
+                    </p>
                   </div>
                   
                   <Button onClick={connectBroker} className="w-full">

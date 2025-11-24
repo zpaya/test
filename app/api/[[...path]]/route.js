@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { MongoClient } from 'mongodb';
 import { v4 as uuidv4 } from 'uuid';
+import { DhanBroker, mapProductTypeToDhan, mapExchangeSegment } from '@/lib/brokers/dhan';
 
 const client = new MongoClient(process.env.MONGO_URL);
 let db;
@@ -212,23 +213,46 @@ export async function POST(request, { params }) {
 
           let orderResult = null;
           if (canExecute) {
-            // Mock order placement
-            orderResult = dhanMock.placeOrder({
-              transactionType,
-              exchangeSegment: stock.exchange,
-              productType,
-              orderType,
-              tradingSymbol: symbol,
-              securityId: stock.securityId,
-              quantity: orderQuantity,
-              price: price || stock.price
-            });
+            const dhanConnection = subscriber.brokerConnections?.find(bc => bc.brokerName === 'Dhan' && bc.status === 'connected');
 
-            // Simulate some random order execution results
-            const executionSuccess = Math.random() > 0.1; // 90% success rate
-            orderResult.status = executionSuccess ? 'EXECUTED' : 'FAILED';
-            if (!executionSuccess) {
-              errorReason = 'Market execution failed - insufficient liquidity';
+            if (dhanConnection && dhanConnection.accessToken) {
+              try {
+                const dhanBroker = new DhanBroker(dhanConnection.clientId, dhanConnection.accessToken);
+
+                const dhanOrderParams = {
+                  transactionType,
+                  exchangeSegment: mapExchangeSegment(stock.exchange),
+                  productType: mapProductTypeToDhan(productType),
+                  orderType,
+                  securityId: stock.securityId,
+                  tradingSymbol: symbol,
+                  quantity: orderQuantity,
+                  price: orderType === 'LIMIT' ? (price || stock.price) : undefined
+                };
+
+                orderResult = await dhanBroker.placeOrder(dhanOrderParams);
+                orderResult.status = orderResult.orderStatus === 'PENDING' || orderResult.orderStatus === 'TRANSIT' ? 'EXECUTED' : 'FAILED';
+              } catch (error) {
+                canExecute = false;
+                errorReason = `Dhan API error: ${error.message}`;
+              }
+            } else {
+              orderResult = dhanMock.placeOrder({
+                transactionType,
+                exchangeSegment: stock.exchange,
+                productType,
+                orderType,
+                tradingSymbol: symbol,
+                securityId: stock.securityId,
+                quantity: orderQuantity,
+                price: price || stock.price
+              });
+
+              const executionSuccess = Math.random() > 0.1;
+              orderResult.status = executionSuccess ? 'EXECUTED' : 'FAILED';
+              if (!executionSuccess) {
+                errorReason = 'Mock execution - broker not connected';
+              }
             }
           }
 
@@ -315,17 +339,31 @@ export async function POST(request, { params }) {
 
     // User routes
     if (path === 'user/connect-broker') {
-      const { brokerName, apiKey, apiSecret, clientId } = body;
-      
+      const { brokerName, apiKey, apiSecret, clientId, accessToken } = body;
+
       const brokerConnection = {
         id: uuidv4(),
         brokerName,
         apiKey,
         apiSecret,
         clientId,
+        accessToken,
         status: 'connected',
         connectedAt: new Date()
       };
+
+      if (brokerName === 'Dhan' && accessToken && clientId) {
+        try {
+          const dhanBroker = new DhanBroker(clientId, accessToken);
+          const fundsResponse = await dhanBroker.getFunds();
+
+          brokerConnection.verified = true;
+          brokerConnection.verifiedAt = new Date();
+        } catch (error) {
+          brokerConnection.status = 'error';
+          brokerConnection.error = error.message;
+        }
+      }
 
       await database.collection('users').updateOne(
         { id: user.id },
@@ -391,13 +429,37 @@ export async function GET(request, { params }) {
     }
 
     if (path === 'user/portfolio') {
+      const dhanConnection = user.brokerConnections?.find(bc => bc.brokerName === 'Dhan' && bc.status === 'connected');
+
+      if (dhanConnection && dhanConnection.accessToken) {
+        try {
+          const dhanBroker = new DhanBroker(dhanConnection.clientId, dhanConnection.accessToken);
+          const holdings = await dhanBroker.getHoldings();
+          return NextResponse.json({ holdings: holdings.data || [] });
+        } catch (error) {
+          return NextResponse.json({ holdings: dhanMock.getHoldings(user.id), mock: true, error: error.message });
+        }
+      }
+
       const holdings = dhanMock.getHoldings(user.id);
-      return NextResponse.json({ holdings });
+      return NextResponse.json({ holdings, mock: true });
     }
 
     if (path === 'user/funds') {
+      const dhanConnection = user.brokerConnections?.find(bc => bc.brokerName === 'Dhan' && bc.status === 'connected');
+
+      if (dhanConnection && dhanConnection.accessToken) {
+        try {
+          const dhanBroker = new DhanBroker(dhanConnection.clientId, dhanConnection.accessToken);
+          const funds = await dhanBroker.getFunds();
+          return NextResponse.json({ funds: funds.data || funds, real: true });
+        } catch (error) {
+          return NextResponse.json({ funds: dhanMock.getFunds(user.id), mock: true, error: error.message });
+        }
+      }
+
       const funds = dhanMock.getFunds(user.id);
-      return NextResponse.json({ funds });
+      return NextResponse.json({ funds, mock: true });
     }
 
     if (path === 'user/orders') {
